@@ -1,0 +1,6 @@
+node_modules/
+bun.lock
+history.json
+output.txt
+api.log
+runner.log
