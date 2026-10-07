@@ -1,6 +1,40 @@
+# Dependencies
 node_modules/
-bun.lock
-history.json
-output.txt
-api.log
+frontend/node_modules/
+
+# Rust build outputs
+backend/target/
+**/target/
+**/*.rs.bk
+
+# Frontend build outputs
+dist/
+frontend/dist/
+*.tsbuildinfo
+
+# Runtime logs & data
+*.log
 runner.log
+api.log
+history.json
+
+# Execution temporary files & binaries
+runner_*
+temp_*
+*.tmp
+*.exe
+
+# OS & Editors
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env
+.env.local
+.env.*.local

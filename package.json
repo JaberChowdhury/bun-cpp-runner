@@ -1,9 +1,17 @@
 {
   "scripts": {
-    "dev": "bun --watch  run server.ts",
-    "start": "bun --watch  run server.ts"
+    "dev": "concurrently -k -n \"backend,frontend\" -c \"blue,cyan\" \"bun run dev:backend\" \"bun run dev:frontend\"",
+    "start": "bun run dev",
+    "dev:backend": "cargo run --manifest-path backend/Cargo.toml",
+    "dev:frontend": "bun --cwd frontend dev",
+    "build:backend": "cargo build --release --manifest-path backend/Cargo.toml",
+    "build:frontend": "bun --cwd frontend build",
+    "test:backend": "cargo test --manifest-path backend/Cargo.toml"
   },
   "dependencies": {
     "@types/bun": "^1.3.11"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }
