@@ -1,4 +1,5 @@
 import React from 'react';
+import Editor from '@monaco-editor/react';
 import {
   Box,
   Stack,
@@ -147,21 +148,27 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
               </Tooltip>
             )}
           </Group>
-          <Textarea
-            value={input}
-            onChange={(e) => onInputChange(e.currentTarget.value)}
-            placeholder="Type input passed to program via stdin..."
-            autosize
-            minRows={3}
-            maxRows={8}
-            styles={{
-              input: {
+          <Box style={{ border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`, borderRadius: '4px', overflow: 'hidden', backgroundColor: isDark ? '#101016' : '#ffffff' }}>
+            <Editor
+              height="120px"
+              language="plaintext"
+              theme={isDark ? 'vs-dark' : 'light'}
+              value={input}
+              onChange={(val) => onInputChange(val || '')}
+              options={{
+                minimap: { enabled: false },
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                fontSize: 13,
                 fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '13px',
-                backgroundColor: isDark ? '#101016' : '#ffffff',
-              },
-            }}
-          />
+                padding: { top: 8, bottom: 8 },
+                overviewRulerLanes: 0,
+                hideCursorInOverviewRuler: true,
+                renderLineHighlight: 'none',
+              }}
+            />
+          </Box>
         </Box>
 
         {/* Expected Output Validation Section */}
@@ -204,21 +211,27 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
                   </Tooltip>
                 )}
               </Group>
-              <Textarea
-                value={expectedOutput}
-                onChange={(e) => onExpectedOutputChange(e.currentTarget.value)}
-                placeholder="Target output to match against..."
-                autosize
-                minRows={2}
-                maxRows={6}
-                styles={{
-                  input: {
+              <Box style={{ border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`, borderRadius: '4px', overflow: 'hidden', backgroundColor: isDark ? '#101016' : '#ffffff' }}>
+                <Editor
+                  height="100px"
+                  language="plaintext"
+                  theme={isDark ? 'vs-dark' : 'light'}
+                  value={expectedOutput}
+                  onChange={(val) => onExpectedOutputChange(val || '')}
+                  options={{
+                    minimap: { enabled: false },
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    fontSize: 13,
                     fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: '13px',
-                    backgroundColor: isDark ? '#101016' : '#ffffff',
-                  },
-                }}
-              />
+                    padding: { top: 8, bottom: 8 },
+                    overviewRulerLanes: 0,
+                    hideCursorInOverviewRuler: true,
+                    renderLineHighlight: 'none',
+                  }}
+                />
+              </Box>
             </Box>
           )}
         </Paper>
@@ -395,6 +408,70 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
                   </Text>
                 </Group>
                 <Group grow align="flex-start" gap="xs">
+                  {/* Standard Input */}
+                  {input && (
+                    <Box>
+                      <Group justify="space-between" align="center" mb={4}>
+                        <Text size="11px" fw={600} c="dimmed">
+                          Input:
+                        </Text>
+                        <Tooltip label="Copy Input" withArrow>
+                          <ActionIcon
+                            size="xs"
+                            variant="subtle"
+                            color="gray"
+                            onClick={() => copyToClipboard(input.trim(), 'Input')}
+                          >
+                            <IconCopy size={12} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
+                      <Box
+                        component="pre"
+                        p="xs"
+                        style={{
+                          margin: 0,
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontSize: '12px',
+                          borderRadius: '6px',
+                          backgroundColor: isDark ? '#101016' : '#ffffff',
+                          border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          minHeight: '60px',
+                        }}
+                      >
+                        {(() => {
+                          const trimmedInput = input.trim();
+                          if (!trimmedInput) return '(empty)';
+                          const inputLines = trimmedInput.split('\n');
+                          
+                          return inputLines.map((line, i) => (
+                            <div key={i} style={{
+                              display: 'flex',
+                              color: isDark ? '#c1c2c5' : '#495057',
+                              padding: '0 4px',
+                              borderRadius: '2px',
+                              marginBottom: '2px'
+                            }}>
+                              <span style={{ 
+                                display: 'inline-block', 
+                                width: '28px', 
+                                opacity: 0.5, 
+                                marginRight: '8px',
+                                userSelect: 'none',
+                                textAlign: 'right'
+                              }}>
+                                {i + 1}
+                              </span>
+                              <span style={{ flex: 1 }}>{line || ' '}</span>
+                            </div>
+                          ));
+                        })()}
+                      </Box>
+                    </Box>
+                  )}
+
                   {/* Actual Output */}
                   <Box>
                     <Group justify="space-between" align="center" mb={4}>
@@ -420,15 +497,44 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
                         fontFamily: '"JetBrains Mono", monospace',
                         fontSize: '12px',
                         borderRadius: '6px',
-                        backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2',
-                        border: '1px solid rgba(239, 68, 68, 0.3)',
-                        color: isDark ? '#fca5a5' : '#991b1b',
+                        backgroundColor: isDark ? '#101016' : '#ffffff',
+                        border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         minHeight: '60px',
                       }}
                     >
-                      {result.output || '(empty)'}
+                      {(() => {
+                        if (!result.output) return '(empty)';
+                        const actualLines = result.output.split('\n');
+                        const expectedLines = expectedOutput.trim().split('\n');
+                        
+                        return actualLines.map((line, i) => {
+                          const isMatch = i < expectedLines.length && line.trimEnd() === expectedLines[i].trimEnd();
+                          return (
+                            <div key={i} style={{
+                              display: 'flex',
+                              color: isMatch ? (isDark ? '#6ee7b7' : '#065f46') : (isDark ? '#fca5a5' : '#991b1b'),
+                              backgroundColor: isMatch ? (isDark ? 'rgba(16, 185, 129, 0.1)' : '#f0fdf4') : (isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2'),
+                              padding: '0 4px',
+                              borderRadius: '2px',
+                              marginBottom: '2px'
+                            }}>
+                              <span style={{ 
+                                display: 'inline-block', 
+                                width: '28px', 
+                                opacity: 0.5, 
+                                marginRight: '8px',
+                                userSelect: 'none',
+                                textAlign: 'right'
+                              }}>
+                                {i + 1}
+                              </span>
+                              <span style={{ flex: 1 }}>{line || ' '}</span>
+                            </div>
+                          );
+                        });
+                      })()}
                     </Box>
                   </Box>
 
@@ -457,15 +563,41 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({
                         fontFamily: '"JetBrains Mono", monospace',
                         fontSize: '12px',
                         borderRadius: '6px',
-                        backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : '#f0fdf4',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        color: isDark ? '#6ee7b7' : '#065f46',
+                        backgroundColor: isDark ? '#101016' : '#ffffff',
+                        border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         minHeight: '60px',
                       }}
                     >
-                      {expectedOutput.trim() || '(empty)'}
+                      {(() => {
+                        const trimmedExpected = expectedOutput.trim();
+                        if (!trimmedExpected) return '(empty)';
+                        const expectedLines = trimmedExpected.split('\n');
+                        
+                        return expectedLines.map((line, i) => (
+                          <div key={i} style={{
+                            display: 'flex',
+                            color: isDark ? '#6ee7b7' : '#065f46',
+                            backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : '#f0fdf4',
+                            padding: '0 4px',
+                            borderRadius: '2px',
+                            marginBottom: '2px'
+                          }}>
+                            <span style={{ 
+                              display: 'inline-block', 
+                              width: '28px', 
+                              opacity: 0.5, 
+                              marginRight: '8px',
+                              userSelect: 'none',
+                              textAlign: 'right'
+                            }}>
+                              {i + 1}
+                            </span>
+                            <span style={{ flex: 1 }}>{line || ' '}</span>
+                          </div>
+                        ));
+                      })()}
                     </Box>
                   </Box>
                 </Group>
