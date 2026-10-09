@@ -3,7 +3,6 @@ import Editor from '@monaco-editor/react';
 import {
   Box,
   Stack,
-  Textarea,
   Switch,
   Badge,
   Text,
